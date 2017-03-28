@@ -1,29 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
+<link rel="stylesheet" href="public/stylesheets/style.css">
 <meta charset="UTF-8">
 <style>
-div#test{ border:#000 1px solid; padding:10px 40px 40px 40px; }
+div#test{  
+		width: 300px;
+		height: 150px;
+		margin: auto;
+		border-width: 2px;
+		border-style: dotted;
+		border-color: blue;
+		padding: 20px 40px 40px 40px; 
+		}
 </style>
 <script>
 var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
 var questions = [
-    [ "What is 10 + 4?", "12", "14", "16", "B" ],
-	[ "What is 20 - 9?", "7", "13", "11", "C" ],
-	[ "What is 7 x 3?", "21", "24", "25", "A" ],
-	[ "What is 8 / 2?", "10", "2", "4", "C" ]
+    [ "What is 14 + 2?", "12", "14", "16", "C" ],
+	[ "What is 19 + 3?", "27", "22", "11", "B" ],
+	[ "What is 6 x 5?", "30", "24", "25", "A" ],
+	[ "What is 4 / 4?", "1", "2", "4", "A" ]
 ];
 function _(x){
 	return document.getElementById(x);
 }
 function renderQuestion(){
+	var percent = (correct/questions.length)*100
 	test = _("test");
 	if(pos >= questions.length){
-		test.innerHTML = "<h2>You got "+correct+" of "+questions.length+" questions correct</h2>";
+		test.innerHTML = "<h2>You got "+percent+"% of the questions correct.</h2>";
+		test.innerHTML += "<button onclick='retakeTest()'>Retake</button>";
 		_("test_status").innerHTML = "Test Completed";
 		pos = 0;
 		correct = 0;
 		return false;
+
 	}
 	_("test_status").innerHTML = "Question "+(pos+1)+" of "+questions.length;
 	question = questions[pos][0];
@@ -34,7 +46,11 @@ function renderQuestion(){
 	test.innerHTML += "<input type='radio' name='choices' value='A'> "+chA+"<br>";
 	test.innerHTML += "<input type='radio' name='choices' value='B'> "+chB+"<br>";
 	test.innerHTML += "<input type='radio' name='choices' value='C'> "+chC+"<br><br>";
-	test.innerHTML += "<button onclick='checkAnswer()'>Submit Answer</button>";
+	test.innerHTML += "<button onclick='previousAnswer()'>Previous Question</button>";
+	test.innerHTML += "<button onclick='checkAnswer()'>Next Question</button>";
+}
+function retakeTest(){
+	renderQuestion();
 }
 function checkAnswer(){
 	choices = document.getElementsByName("choices");
@@ -48,6 +64,18 @@ function checkAnswer(){
 	}
 	pos++;
 	renderQuestion();
+}
+function previousAnswer(){
+	if(pos==0){
+		alert("This is the first question.")
+	}
+	else{
+		if(choice == question[pos][4]){
+			correct--
+		}
+		pos--;
+		renderQuestion();
+	}
 }
 window.addEventListener("load", renderQuestion, false);
 </script>
