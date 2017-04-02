@@ -14,13 +14,27 @@ div#test{
 		padding: 20px 40px 40px 40px; 
 		}
 </style>
+<script src="https://www.gstatic.com/firebasejs/3.7.4/firebase.js"></script>
 <script>
-var pos = 0, test, test_status, question, choice, choices, chA, chB, chC, correct = 0;
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyB8oQLKcOlAov-75kt7fsaOl5WjP4mcesU",
+    authDomain: "internship-a2ff6.firebaseapp.com",
+    databaseURL: "https://internship-a2ff6.firebaseio.com",
+    projectId: "internship-a2ff6",
+    storageBucket: "internship-a2ff6.appspot.com",
+    messagingSenderId: "270704725965"
+  };
+  firebase.initializeApp(config);
+  console.log(firebase);
+</script>
+<script>
+var pos = 0, test, test_status, question, questionCounter = 0, choice, choices, correct = 0;
 var questions = [
-    [ "What is 14 + 2?", "12", "14", "16", "C" ],
-	[ "What is 19 + 3?", "27", "22", "11", "B" ],
-	[ "What is 6 x 5?", "30", "24", "25", "A" ],
-	[ "What is 4 / 4?", "1", "2", "4", "A" ]
+    [ "What is 14 + 2?", 16],
+	[ "What is 19 + 3?", 22],
+	[ "What is 6 x 5?", 30],
+	[ "What is 4 / 4?", 1]
 ];
 function _(x){
 	return document.getElementById(x);
@@ -32,6 +46,7 @@ function renderQuestion(){
 	if(pos >= questions.length){
 		test.innerHTML = "<h2>You got "+percent+"% of the questions correct.</h2>";
 		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
+		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
 		_("test_status").innerHTML = "Test Completed";
 		pos = 0;
 		correct = 0;
@@ -40,37 +55,47 @@ function renderQuestion(){
 	}
 	_("test_status").innerHTML = "Question "+(pos+1)+" of "+questions.length;
 	question = questions[pos][0];
-	chA = questions[pos][1];
-	chB = questions[pos][2];
-	chC = questions[pos][3];
 	test.innerHTML = "<h3>"+question+"</h3>";
-	test.innerHTML += "<input type='radio' name='choices' value='A'> "+chA+"<br>";
-	test.innerHTML += "<input type='radio' name='choices' value='B'> "+chB+"<br>";
-	test.innerHTML += "<input type='radio' name='choices' value='C'> "+chC+"<br><br>";
+	test.innerHTML += "<textarea class='mainText' id='mainText' name='choices' placeholder='Enter Answer Here'></textarea> <br>";
 	if(pos != 0){
 		test.innerHTML += "<button class='left' onclick='previousAnswer()'>Previous</button>";
 	}
-	test.innerHTML += "<button class='submit' onclick='checkAnswer()'>Submit</button>";
+	test.innerHTML += "<button id='submitBtn' class='submit' onclick='checkAnswer(), submitClick()'>Submit</button>";
 }
 
 function correcto(){
 	test = _("test");
-	_("test_status").innerHTML = "That is correct!";
+	_("test_status").innerHTML = "<h2 class='outline'>"+choice+"</h2>" + "<h2 class='outline'> is correct.</h2>";
 	test.innerHTML = ""
-	test.innerHTML += "<button class='button' onclick='previousAnswer()'>See Question Again</button>";
+	test.innerHTML += "<button class='button' onclick='previousAnswerCorrect()'>See Question Again</button>";
 	test.innerHTML += "<button class='next' onclick='nextAnswer()'>Next Question</button>";
 }
 
 function incorrect(){
 	test = _("test");
-	_("test_status").innerHTML = "That is incorrect.";
+	_("test_status").innerHTML = "<h2 class='lol inline'>"+choice+"</h2>" + "<h2 class='inline'> is incorrect.</h2>";
 	test.innerHTML = ""
-	test.innerHTML += "<button class='button' onclick='previousAnswer()'>See Question Again</button>";
+	test.innerHTML += "<button class='button' onclick='previousAnswerIncorrect()'>See Question Again</button>";
 	test.innerHTML += "<button class='next' onclick='nextAnswer()'>Next Question</button>";
 }
 
 function retakeTest(){
 	renderQuestion();
+}
+
+function review(){
+	test = _("test");
+	_("test_status").innerHTML = "<h2>Review</h2>";
+	test.innerHTML = ""
+	test.innerHTML += "<h2 id='questionOne'>Your Answer: </h2>";
+	test.innerHTML += "<h2>Correct Answer: 16</h2>";
+	test.innerHTML += "<h2 id='questionTwo'>Your Answer: </h2>";
+	test.innerHTML += "<h2>Correct Answer: 22</h2>";
+	test.innerHTML += "<h2 id='questionThree'>Your Answer: </h2>";
+	test.innerHTML += "<h2>Correct Answer: 30</h2>";
+	test.innerHTML += "<h2 id='questionFour'>Your Answer: </h2>";
+	test.innerHTML += "<h2>Correct Answer: 1</h2>";
+	reviewClick();
 }
 
 function nextAnswer(){
@@ -83,6 +108,7 @@ function checkAnswer(){
 	if(pos >= questions.length){
 		test.innerHTML = "<h2>You got "+percent+"% of the questions correct.</h2>";
 		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
+		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
 		_("test_status").innerHTML = "Test Completed";
 		pos = 0;
 		correct = 0;
@@ -90,33 +116,119 @@ function checkAnswer(){
 	}
 	choices = document.getElementsByName("choices");
 	for(var i=0; i<choices.length; i++){
-		if(choices[i].checked){
-			choice = choices[i].value;
-		}
+		choice = choices[i].value;
 	}
-	if(choice == questions[pos][4]){
+	if(choice == questions[pos][1]){
 		correct++;
 		correcto();
 	}
-	if(choice != questions[pos][4]){
+	if(choice != questions[pos][1]){
 		incorrect();
 	}
 	pos++;
 	
 }
-function previousAnswer(){
+function previousAnswerIncorrect(){
 	if(pos==0){
 		alert("This is the first question.")
 	}
 	else{
-		if(choice == question[pos][4]){
-			correct--
-		}
+		questionCounter--;
 		pos--;
 		renderQuestion();
+		}
+	}
+
+function previousAnswerCorrect(){
+	if(pos==0){
+		alert("This is the first question.")
+	}
+	else{
+		questionCounter--;
+		correct--;
+		pos--;
+		renderQuestion();
+		}
+	}
+window.addEventListener("load", renderQuestion, correcto, incorrect, false);
+</script>
+<script>
+function reviewClick() {
+	var firstHeading = document.getElementById("questionOne");
+	var firstbaseHeadingRef = firebase.database().ref().child("questionOne");
+	firstbaseHeadingRef.on('value', function(firstsnapshot){
+		firstHeading.innerHTML = firstsnapshot.val();
+		});
+
+	var secondHeading = document.getElementById("questionTwo");
+	var mainnText = document.getElementById("mainText");
+	var secondbaseHeadingRef = firebase.database().ref().child("questionTwo");
+	secondbaseHeadingRef.on('value', function(secondsnapshot){
+		secondHeading.innerHTML = secondsnapshot.val();
+		});
+
+	var thirdHeading = document.getElementById("questionThree");
+	var thirdbaseHeadingRef = firebase.database().ref().child("questionThree");
+	thirdbaseHeadingRef.on('value', function(thirdsnapshot){
+		thirdHeading.innerHTML = thirdsnapshot.val();
+		});
+
+	var fourthHeading = document.getElementById("questionFour");
+	var fourthbaseHeadingRef = firebase.database().ref().child("questionFour");
+	fourthbaseHeadingRef.on('value', function(fourthsnapshot){
+		fourthHeading.innerHTML = fourthsnapshot.val();
+		});
+}
+function submitClick() {
+	if(pos==1){
+	var firstHeading = document.getElementById("questionOne");
+	var mainnText = document.getElementById("mainText");
+	var submitBtn = document.getElementById("submitBtn");
+	var firebaseRef = firebase.database().ref();
+	firebaseRef.child("questionOne").set(choice);
+	var firstbaseHeadingRef = firebase.database().ref().child("questionOne");
+	firstbaseHeadingRef.on('value', function(firstsnapshot){
+		firstHeading.innerHTML = firstsnapshot.val();
+		});
+	}
+
+	if(pos==2){
+	var secondHeading = document.getElementById("questionTwo");
+	var mainnText = document.getElementById("mainText");
+	var submitBtn = document.getElementById("submitBtn");
+	var firebaseRef = firebase.database().ref();
+	firebaseRef.child("questionTwo").set(choice);
+	var secondbaseHeadingRef = firebase.database().ref().child("questionTwo");
+	secondbaseHeadingRef.on('value', function(secondsnapshot){
+		secondHeading.innerHTML = secondsnapshot.val();
+		});
+	}
+	
+	if(pos==3){
+	var thirdHeading = document.getElementById("questionThree");
+	var mainnText = document.getElementById("mainText");
+	var submitBtn = document.getElementById("submitBtn");
+	var firebaseRef = firebase.database().ref();
+	firebaseRef.child("questionThree").set(choice);
+	var thirdbaseHeadingRef = firebase.database().ref().child("questionThree");
+	thirdbaseHeadingRef.on('value', function(thirdsnapshot){
+		thirdHeading.innerHTML = thirdsnapshot.val();
+		});
+	}
+	
+	if(pos==4){
+	var fourthHeading = document.getElementById("questionFour");
+	var mainnText = document.getElementById("mainText");
+	var submitBtn = document.getElementById("submitBtn");
+	var firebaseRef = firebase.database().ref();
+	firebaseRef.child("questionFour").set(choice);
+	var fourthbaseHeadingRef = firebase.database().ref().child("questionFour");
+	fourthbaseHeadingRef.on('value', function(fourthsnapshot){
+		fourthHeading.innerHTML = fourthsnapshot.val();
+		});
 	}
 }
-window.addEventListener("load", renderQuestion, correcto, incorrect, false);
+</script>
 </script>
 </head>
 <body>

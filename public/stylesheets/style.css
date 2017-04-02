@@ -68,5 +68,22 @@ body {
 	height: 40px;
 	text-decoration: none;
 	text-align: center;
+	margin-right: 30px;
+}
+
+.mainText {
+	margin-bottom: 15px;
+	height: 20px;
+	width: 100px;
+}
+
+.inline {
+	display: inline;
+	color: red;
+}
+
+.outline {
+	display: inline;
+	color: green;
 }
 
