@@ -84,18 +84,6 @@ function wrongIncorrect(){
 	test.innerHTML = ""
 	test.innerHTML += "<button class='button' onclick='wrongAnswerIncorrect()'>See Question Again</button>";
 	test.innerHTML += "<button class='next' onclick='retakeWrongAnswer()'>Next Question</button>";
-	if(pos == 0){
-		incorrectQuestionArray.push(question);
-	}
-	if(pos == 1){
-		incorrectQuestionArray.push(question);
-	}
-	if(pos == 2){
-		incorrectQuestionArray.push(question);
-	}
-	if(pos == 3){
-		incorrectQuestionArray.push(question);
-	}
 }
 
 
@@ -206,13 +194,37 @@ function checkWrongAnswer(){
 	for(var i=0; i<choices.length; i++){
 		choice = choices[i].value;
 	}
+
+	if(incorrectQuestionArray.length == 3){
 	if(choice == questions[pos + 1][1]){
 		correct++;
 		wrongCorrecto();
-	}
+		}
 	if(choice != questions[pos + 1][1]){
 		wrongIncorrect();
+		}
 	}
+
+	if(incorrectQuestionArray.length == 2){
+	if(choice == questions[pos + 2][1]){
+		correct++;
+		wrongCorrecto();
+		}
+	if(choice != questions[pos + 2][1]){
+		wrongIncorrect();
+		}
+	}
+
+	if(incorrectQuestionArray.length == 1){
+	if(choice == 22&&1&&30&&16){
+		correct++;
+		wrongCorrecto();
+		}
+	if(choice != 22&&1&&30&&16){
+		wrongIncorrect();
+		}
+	}
+
 	pos++;
 }
 
