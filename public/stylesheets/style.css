@@ -1,3 +1,4 @@
+
 body {
 	text-align: center;
     background-color: powderblue;
@@ -16,6 +17,8 @@ body {
     width: 150px;
     height: 150px;
     float: left;
+    margin-top: 100px;
+
 }
 
 .next {
@@ -31,6 +34,7 @@ body {
     width: 150px;
     height: 150px;
     float: right;
+    margin-top: 100px;
 }
 
 .submit {
@@ -64,11 +68,12 @@ body {
 	font-family: Helvetica;
 	border-radius: 50px;
 	font-size: 20px;
-	width: 100px;
+	width: 400px;
 	height: 40px;
 	text-decoration: none;
 	text-align: center;
-	margin-right: 30px;
+	margin-top: 10px;
+	margin-right: 45px;
 }
 
 .mainText {
@@ -87,3 +92,33 @@ body {
 	color: green;
 }
 
+.one {
+	display: inline;
+}
+
+.two {
+	display: inline;
+}
+
+.three {
+	display: inline;
+}
+
+.four {
+	display: inline;
+}
+
+.question {
+    margin-top: 100px;
+    font-size: 30px;
+}
+
+.correct {
+	margin-top: 100px;
+	font-size: 30px;
+}
+
+.answer {
+	margin-top: 0px;
+	color: green;
+}

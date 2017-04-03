@@ -6,7 +6,7 @@
 <style>
 div#test{  
 		width: 400px;
-		height: 150px;
+		height: 350px;
 		margin: auto;
 		border-width: 2px;
 		border-style: dotted;
@@ -29,7 +29,7 @@ div#test{
   console.log(firebase);
 </script>
 <script>
-var pos = 0, test, test_status, question, questionCounter = 0, choice, choices, correct = 0;
+var pos = 0, test, test_status, question, percent, incorrectQuestionArray = [], choice, choices, correct = 0;
 var questions = [
     [ "What is 14 + 2?", 16],
 	[ "What is 19 + 3?", 22],
@@ -41,27 +41,63 @@ function _(x){
 }
 
 function renderQuestion(){
-	var percent = (correct/questions.length)*100
+	percent = (correct/questions.length)*100
 	test = _("test");
 	if(pos >= questions.length){
-		test.innerHTML = "<h2>You got "+percent+"% of the questions correct.</h2>";
+		test.innerHTML = "<h2 class='correct'>You got "+percent+"% of the questions correct.</h2>";
 		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
 		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
+		test.innerHTML += "<button class='retake' onclick='retakeWrongAnswer()'>Retake Wrong Answers</button>";
 		_("test_status").innerHTML = "Test Completed";
 		pos = 0;
 		correct = 0;
 		return false;
 
 	}
-	_("test_status").innerHTML = "Question "+(pos+1)+" of "+questions.length;
+	_("test_status").innerHTML = "<h1>Question "+(pos+1)+" of "+questions.length+"</h1>";
 	question = questions[pos][0];
-	test.innerHTML = "<h3>"+question+"</h3>";
+	test.innerHTML = "<h3 class='question'>"+question+"</h3>";
 	test.innerHTML += "<textarea class='mainText' id='mainText' name='choices' placeholder='Enter Answer Here'></textarea> <br>";
 	if(pos != 0){
-		test.innerHTML += "<button class='left' onclick='previousAnswer()'>Previous</button>";
+		if(choice == questions[pos][1]){
+			test.innerHTML += "<button class='left' onclick='previousAnswerCorrect()'>Previous</button>";
+			}
+		if(choice != questions[pos][1]){
+			test.innerHTML += "<button class='left' onclick='previousAnswerIncorrect()'>Previous</button>";
+			}
 	}
 	test.innerHTML += "<button id='submitBtn' class='submit' onclick='checkAnswer(), submitClick()'>Submit</button>";
 }
+
+function wrongCorrecto(){
+	test = _("test");
+	_("test_status").innerHTML = "<h2 class='outline'>"+choice+"</h2>" + "<h2 class='outline'> is correct.</h2>";
+	test.innerHTML = ""
+	test.innerHTML += "<button class='button' onclick='wrongAnswerCorrect()'>See Question Again</button>";
+	test.innerHTML += "<button class='next' onclick='retakeWrongAnswer()'>Next Question</button>";
+
+}
+
+function wrongIncorrecto(){
+	test = _("test");
+	_("test_status").innerHTML = "<h2 class='lol inline'>"+choice+"</h2>" + "<h2 class='inline'> is incorrect.</h2>";
+	test.innerHTML = ""
+	test.innerHTML += "<button class='button' onclick='wrongAnswerIncorrect()'>See Question Again</button>";
+	test.innerHTML += "<button class='next' onclick='retakeWrongAnswer()'>Next Question</button>";
+	if(pos == 0){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 1){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 2){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 3){
+		incorrectQuestionArray.push(question);
+	}
+}
+
 
 function correcto(){
 	test = _("test");
@@ -77,24 +113,71 @@ function incorrect(){
 	test.innerHTML = ""
 	test.innerHTML += "<button class='button' onclick='previousAnswerIncorrect()'>See Question Again</button>";
 	test.innerHTML += "<button class='next' onclick='nextAnswer()'>Next Question</button>";
+	if(pos == 0){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 1){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 2){
+		incorrectQuestionArray.push(question);
+	}
+	if(pos == 3){
+		incorrectQuestionArray.push(question);
+	}
 }
 
 function retakeTest(){
 	renderQuestion();
 }
 
+function retakeWrongAnswer(){
+	if(percent == 100){
+		alert('You got everything correct!')
+		return
+	}
+	percent = (correct/incorrectQuestionArray.length)*100
+	test = _("test");
+	if(pos >= incorrectQuestionArray.length){
+		test.innerHTML = "<h2 class='correct'>You got "+percent+"% of the questions correct.</h2>";
+		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
+		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
+		test.innerHTML += "<button class='retake' onclick='retakeWrongAnswer()'>Retake Wrong Answers</button>";
+		_("test_status").innerHTML = "Test Completed";
+		pos = 0;
+		correct = 0;
+		incorrectQuestionArray = [];
+		return false;
+
+	}
+	_("test_status").innerHTML = "<h1>Question "+(pos+1)+" of "+incorrectQuestionArray.length+"</h1>";
+	question = incorrectQuestionArray[pos];
+	test.innerHTML = "<h3 class='question'>"+question+"</h3>";
+	test.innerHTML += "<textarea class='mainText' id='mainText' name='choices' placeholder='Enter Answer Here'></textarea> <br>";
+	if(pos != 0){
+		if(choice == questions[pos][1]){
+			test.innerHTML += "<button class='left' onclick='wrongAnswerCorrect()'>Previous</button>";
+			}
+		if(choice != questions[pos][1]){
+			test.innerHTML += "<button class='left' onclick='wrongAnswerIncorrect()'>Previous</button>";
+			}
+	}
+	test.innerHTML += "<button id='submitBtn' class='submit' onclick='checkWrongAnswer(), submitClick()'>Submit</button>";
+}
+
 function review(){
 	test = _("test");
 	_("test_status").innerHTML = "<h2>Review</h2>";
 	test.innerHTML = ""
-	test.innerHTML += "<h2 id='questionOne'>Your Answer: </h2>";
-	test.innerHTML += "<h2>Correct Answer: 16</h2>";
-	test.innerHTML += "<h2 id='questionTwo'>Your Answer: </h2>";
-	test.innerHTML += "<h2>Correct Answer: 22</h2>";
-	test.innerHTML += "<h2 id='questionThree'>Your Answer: </h2>";
-	test.innerHTML += "<h2>Correct Answer: 30</h2>";
-	test.innerHTML += "<h2 id='questionFour'>Your Answer: </h2>";
-	test.innerHTML += "<h2>Correct Answer: 1</h2>";
+	test.innerHTML += "<h2 class='one'>Question 1) Your Answer: </h2>"+"<h2 class='one' id='questionOne'></h2>";
+	test.innerHTML += "<h2 class='answer'>Correct Answer: 16</h2>";
+	test.innerHTML += "<h2 class='two'>Question 2) Your Answer: </h2>"+"<h2 class='two' id='questionTwo'></h2>";
+	test.innerHTML += "<h2 class='answer'>Correct Answer: 22</h2>";
+	test.innerHTML += "<h2 class='three'>Question 3) Your Answer: "+"<h2 class='three' id='questionThree'></h2>";
+	test.innerHTML += "<h2 class='answer'>Correct Answer: 30</h2>";
+	test.innerHTML += "<h2 class='four'>Question 4) Your Answer: </h2>"+"<h2 class='four' id='questionFour'></h2>";
+	test.innerHTML += "<h2 class='answer'>Correct Answer: 1</h2>";
+	test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
 	reviewClick();
 }
 
@@ -102,11 +185,42 @@ function nextAnswer(){
 	renderQuestion();
 }
 
+function checkWrongAnswer(){
+	if(percent == 100){
+		alert('You got everything correct!')
+		return
+	}
+	percent = (correct/incorrectQuestionArray.length)*100
+	test = _("test");
+	if(pos >= incorrectQuestionArray.length){
+		test.innerHTML = "<h2 class='correct'>You got </h2>"+percent+"<h2 class='correct'>% of the questions correct.</h2>";
+		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
+		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
+		_("test_status").innerHTML = "Test Completed";
+		pos = 0;
+		correct = 0;
+		incorrectQuestionArray = [];
+		return false;
+	}
+	choices = document.getElementsByName("choices");
+	for(var i=0; i<choices.length; i++){
+		choice = choices[i].value;
+	}
+	if(choice == questions[pos][1]){
+		correct++;
+		wrongCorrecto();
+	}
+	if(choice != questions[pos][1]){
+		wrongIncorrect();
+	}
+	pos++;
+}
+
 function checkAnswer(){
-	var percent = (correct/questions.length)*100
+	percent = (correct/questions.length)*100
 	test = _("test");
 	if(pos >= questions.length){
-		test.innerHTML = "<h2>You got "+percent+"% of the questions correct.</h2>";
+		test.innerHTML = "<h2 class='correct'>You got </h2>"+percent+"<h2 class='correct'>% of the questions correct.</h2>";
 		test.innerHTML += "<button class='retake' onclick='retakeTest()'>Retake</button>";
 		test.innerHTML += "<button class='retake' onclick='review()'>Review</button>";
 		_("test_status").innerHTML = "Test Completed";
@@ -128,12 +242,32 @@ function checkAnswer(){
 	pos++;
 	
 }
+
+function wrongAnswerIncorrect(){
+if(pos==0){
+		alert("This is the first question.")
+	}
+	else{
+		pos--;
+		retakeWrongAnswer();
+		}
+}
+
+function wrongAnswerCorrect(){
+	if(pos==0){
+		alert("This is the first question.")
+	}
+	else{
+		correct--;
+		pos--;
+		retakeWrongAnswer();
+		}
+}
 function previousAnswerIncorrect(){
 	if(pos==0){
 		alert("This is the first question.")
 	}
 	else{
-		questionCounter--;
 		pos--;
 		renderQuestion();
 		}
@@ -144,7 +278,6 @@ function previousAnswerCorrect(){
 		alert("This is the first question.")
 	}
 	else{
-		questionCounter--;
 		correct--;
 		pos--;
 		renderQuestion();
